@@ -16,7 +16,7 @@ function EditorContainer(props) {
   }
 
   return (
-    <div className="editors__editor-container">
+    <div className="editors__editor-container" style={{flex: '1'}}>
       <div
         className="environment__label label"
         onClick={props.onMinimize}

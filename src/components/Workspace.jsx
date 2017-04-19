@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import React from 'react';
+import ReactDOM from 'react-dom';
+import Draggable from 'react-draggable';
 import {connect} from 'react-redux';
 import values from 'lodash/values';
 import bindAll from 'lodash/bindAll';
@@ -90,6 +92,8 @@ function mapStateToProps(state) {
 class Workspace extends React.Component {
   constructor() {
     super();
+    this.editorRefs = [];
+    this.editorStyles = [];
     bindAll(
       this,
       '_confirmUnload',
@@ -97,6 +101,7 @@ class Workspace extends React.Component {
       '_handleComponentMaximized',
       '_handleComponentMinimized',
       '_handleDashboardSubmenuToggled',
+      '_handleEditorDividerDrag',
       '_handleEditorInput',
       '_handleErrorClick',
       '_handleLibraryToggled',
@@ -109,6 +114,7 @@ class Workspace extends React.Component {
       '_handleRequestedLineFocused',
       '_handleNotificationDismissed',
       '_handleExportGist',
+      '_storeEditorRef',
     );
   }
 
@@ -238,13 +244,25 @@ class Workspace extends React.Component {
     );
   }
 
-  _renderEditors() {
-    const editors = [];
-    ['html', 'css', 'javascript'].forEach((language) => {
-      if (includes(this.props.ui.minimizedComponents, `editor.${language}`)) {
-        return;
-      }
+  _storeEditorRef(index, editor) {
+    this.editorRefs[index] = editor;
+  }
 
+  _handleEditorDividerDrag(index) {
+    for (const editorRef of this.editorRefs) {
+      const node = ReactDOM.findDOMNode(editorRef);
+
+    }
+  }
+
+  _renderEditors() {
+    this.editorRefs = [];
+    const editors = [];
+    const languages = ['html', 'css', 'javascript'].filter(language =>
+      !includes(this.props.ui.minimizedComponents, `editor.${language}`),
+    );
+
+    languages.forEach((language, index) => {
       editors.push(
         <EditorContainer
           key={language}
@@ -258,13 +276,24 @@ class Workspace extends React.Component {
             errors={this._allErrorsFor(language)}
             key={language}
             language={language}
-            percentageOfHeight={1 / editors.length}
+            percentageOfHeight={1 / languages.length}
             projectKey={this.props.currentProject.projectKey}
+            ref={partial(this._storeEditorRef, index)}
             requestedFocusedLine={this.props.ui.editors.requestedFocusedLine}
             source={this.props.currentProject.sources[language]}
             onInput={partial(this._handleEditorInput, language)}
             onRequestedLineFocused={this._handleRequestedLineFocused}
           />
+          {(index < languages.length - 1) &&
+            <Draggable
+              axis="y"
+              bounds="parent"
+              key={`divider-after-${language}`}
+              onStart={partial(this._handleEditorDividerDrag, index)}
+            >
+              <div className="editors__divider" />
+            </Draggable>
+          }
         </EditorContainer>,
       );
     });
