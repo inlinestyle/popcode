@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Draggable from 'react-draggable';
+import {DraggableCore} from 'react-draggable';
 import {connect} from 'react-redux';
 import values from 'lodash/values';
 import bindAll from 'lodash/bindAll';
@@ -93,7 +93,7 @@ class Workspace extends React.Component {
   constructor() {
     super();
     this.editorRefs = [];
-    this.editorStyles = [];
+    this.state = {editorFlex: ['1', '1', '1']};
     bindAll(
       this,
       '_confirmUnload',
@@ -248,15 +248,28 @@ class Workspace extends React.Component {
     this.editorRefs[index] = editor;
   }
 
-  _handleEditorDividerDrag(index) {
-    for (const editorRef of this.editorRefs) {
-      const node = ReactDOM.findDOMNode(editorRef);
-
+  _handleEditorDividerDrag(index, _, {y}) {
+    const nodes = this.editorRefs.filter(Boolean).map(ReactDOM.findDOMNode);
+    let editorFlex;
+    if (index === 0) {
+      editorFlex = [
+        `0 1 ${y + 4}px`,
+        '1',
+        nodes.length === 3 ? `0 1 ${nodes[2].offsetHeight}` : '1',
+      ];
+    } else {
+      editorFlex = [
+        `0 1 ${nodes[0].offsetHeight}px`,
+        `0 1 ${y + 4}px`,
+        '1',
+      ];
     }
+    this.setState({editorFlex});
   }
 
   _renderEditors() {
     this.editorRefs = [];
+    const {editorFlex} = this.state;
     const editors = [];
     const languages = ['html', 'css', 'javascript'].filter(language =>
       !includes(this.props.ui.minimizedComponents, `editor.${language}`),
@@ -268,6 +281,7 @@ class Workspace extends React.Component {
           key={language}
           language={language}
           source={this.props.currentProject.sources[language]}
+          style={{flex: editorFlex[index]}}
           onMinimize={
             partial(this._handleComponentMinimized, `editor.${language}`)
           }
@@ -285,14 +299,14 @@ class Workspace extends React.Component {
             onRequestedLineFocused={this._handleRequestedLineFocused}
           />
           {(index < languages.length - 1) &&
-            <Draggable
+            <DraggableCore
               axis="y"
               bounds="parent"
               key={`divider-after-${language}`}
-              onStart={partial(this._handleEditorDividerDrag, index)}
+              onDrag={partial(this._handleEditorDividerDrag, index)}
             >
               <div className="editors__divider" />
-            </Draggable>
+            </DraggableCore>
           }
         </EditorContainer>,
       );

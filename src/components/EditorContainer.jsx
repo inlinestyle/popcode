@@ -16,7 +16,7 @@ function EditorContainer(props) {
   }
 
   return (
-    <div className="editors__editor-container" style={{flex: '1'}}>
+    <div className="editors__editor-container" style={props.style}>
       <div
         className="environment__label label"
         onClick={props.onMinimize}
@@ -33,6 +33,7 @@ EditorContainer.propTypes = {
   children: React.PropTypes.node.isRequired,
   language: React.PropTypes.string.isRequired,
   source: React.PropTypes.string.isRequired,
+  style: React.PropTypes.object.isRequired,
   onMinimize: React.PropTypes.func.isRequired,
 };
 
