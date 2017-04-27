@@ -71,6 +71,7 @@ const spinnerPage = base64.fromByteArray(
   ),
 );
 
+const DIVIDER_HEIGHT = 4;
 const defaultEditorFlex = ['1', '1', '1'];
 
 function mapStateToProps(state) {
@@ -257,14 +258,14 @@ class Workspace extends React.Component {
     let editorFlex;
     if (index === 0) {
       editorFlex = [
-        `0 1 ${y + 4}px`,
+        `0 1 ${y + DIVIDER_HEIGHT}px`,
         '1',
-        nodes.length === 3 ? `0 1 ${nodes[2].offsetHeight}` : '1',
+        (nodes.length === 3) ? `0 1 ${nodes[2].offsetHeight}px` : '1',
       ];
     } else {
       editorFlex = [
-        `0 1 ${nodes[0].offsetHeight}px`,
-        `0 1 ${y + 4}px`,
+        `0 1 ${nodes[0].offsetHeight + DIVIDER_HEIGHT}px`,
+        `0 1 ${y + DIVIDER_HEIGHT}px`,
         '1',
       ];
     }
