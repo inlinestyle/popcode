@@ -71,6 +71,8 @@ const spinnerPage = base64.fromByteArray(
   ),
 );
 
+const defaultEditorFlex = ['1', '1', '1'];
+
 function mapStateToProps(state) {
   const projects = sortBy(
     values(state.get('projects').toJS()),
@@ -93,7 +95,7 @@ class Workspace extends React.Component {
   constructor() {
     super();
     this.editorRefs = [];
-    this.state = {editorFlex: ['1', '1', '1']};
+    this.state = {editorFlex: defaultEditorFlex};
     bindAll(
       this,
       '_confirmUnload',
@@ -157,10 +159,12 @@ class Workspace extends React.Component {
   }
 
   _handleComponentMinimized(componentName) {
+    this.setState({editorFlex: defaultEditorFlex});
     this.props.dispatch(minimizeComponent(componentName));
   }
 
   _handleComponentMaximized(componentName) {
+    this.setState({editorFlex: defaultEditorFlex});
     this.props.dispatch(maximizeComponent(componentName));
   }
 
@@ -302,7 +306,7 @@ class Workspace extends React.Component {
             <DraggableCore
               axis="y"
               bounds="parent"
-              key={`divider-after-${language}`}
+              key={`divider:${language}`}
               onDrag={partial(this._handleEditorDividerDrag, index)}
             >
               <div className="editors__divider" />
