@@ -72,6 +72,7 @@ const spinnerPage = base64.fromByteArray(
 );
 
 const DIVIDER_HEIGHT = 4;
+const EDITOR_MIN_HEIGHT = 85;
 const defaultEditorFlex = ['1', '1', '1'];
 
 function mapStateToProps(state) {
@@ -253,23 +254,34 @@ class Workspace extends React.Component {
     this.editorRefs[index] = editor;
   }
 
-  _handleEditorDividerDrag(index, _, {y}) {
+  _handleEditorDividerDrag(index, _, {deltaY, y}) {
     const nodes = this.editorRefs.filter(Boolean).map(ReactDOM.findDOMNode);
-    let editorFlex;
     if (index === 0) {
-      editorFlex = [
+      this.setState({editorFlex: [
         `0 1 ${y + DIVIDER_HEIGHT}px`,
         '1',
         (nodes.length === 3) ? `0 1 ${nodes[2].offsetHeight}px` : '1',
-      ];
-    } else {
-      editorFlex = [
+      ]});
+    } else if (
+      nodes[1].offsetHeight === EDITOR_MIN_HEIGHT - DIVIDER_HEIGHT &&
+      nodes[0].offsetHeight > EDITOR_MIN_HEIGHT &&
+      deltaY < 0
+    ) {
+      this.setState({editorFlex: [
+        `0 1 ${nodes[0].offsetHeight + DIVIDER_HEIGHT + deltaY}px`,
+        `0 1 ${y + DIVIDER_HEIGHT}px`,
+        '1',
+      ]});
+    } else if (
+      nodes[2].offsetHeight > EDITOR_MIN_HEIGHT ||
+      deltaY < 0
+    ) {
+      this.setState({editorFlex: [
         `0 1 ${nodes[0].offsetHeight + DIVIDER_HEIGHT}px`,
         `0 1 ${y + DIVIDER_HEIGHT}px`,
         '1',
-      ];
+      ]});
     }
-    this.setState({editorFlex});
   }
 
   _renderEditors() {
@@ -286,7 +298,7 @@ class Workspace extends React.Component {
           key={language}
           language={language}
           source={this.props.currentProject.sources[language]}
-          style={{flex: editorFlex[index]}}
+          style={{flex: editorFlex[index], minHeight: EDITOR_MIN_HEIGHT}}
           onMinimize={
             partial(this._handleComponentMinimized, `editor.${language}`)
           }
@@ -310,7 +322,10 @@ class Workspace extends React.Component {
               key={`divider:${language}`}
               onDrag={partial(this._handleEditorDividerDrag, index)}
             >
-              <div className="editors__divider" />
+              <div
+                className="editors__divider"
+                style={{height: DIVIDER_HEIGHT}}
+              />
             </DraggableCore>
           }
         </EditorContainer>,
