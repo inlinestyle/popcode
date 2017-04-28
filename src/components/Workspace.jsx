@@ -254,7 +254,7 @@ class Workspace extends React.Component {
     this.editorRefs[index] = editor;
   }
 
-  _handleEditorDividerDrag(index, _, {deltaY, y}) {
+  _handleEditorDividerDrag(index, _, {deltaY, lastY, y}) {
     const nodes = this.editorRefs.filter(Boolean).map(ReactDOM.findDOMNode);
     if (index === 0) {
       this.setState({editorFlex: [
@@ -262,25 +262,42 @@ class Workspace extends React.Component {
         '1',
         (nodes.length === 3) ? `0 1 ${nodes[2].offsetHeight}px` : '1',
       ]});
-    } else if (
-      nodes[1].offsetHeight === EDITOR_MIN_HEIGHT - DIVIDER_HEIGHT &&
-      nodes[0].offsetHeight > EDITOR_MIN_HEIGHT &&
-      deltaY < 0
-    ) {
-      this.setState({editorFlex: [
-        `0 1 ${nodes[0].offsetHeight + DIVIDER_HEIGHT + deltaY}px`,
-        `0 1 ${y + DIVIDER_HEIGHT}px`,
-        '1',
-      ]});
-    } else if (
-      nodes[2].offsetHeight > EDITOR_MIN_HEIGHT ||
-      deltaY < 0
-    ) {
-      this.setState({editorFlex: [
-        `0 1 ${nodes[0].offsetHeight + DIVIDER_HEIGHT}px`,
-        `0 1 ${y + DIVIDER_HEIGHT}px`,
-        '1',
-      ]});
+    } else {
+      const [
+        {offsetHeight: height0},
+        {offsetHeight: height1},
+        {offsetHeight: height2},
+      ] = nodes;
+      if (
+        height1 === EDITOR_MIN_HEIGHT - DIVIDER_HEIGHT &&
+        height0 > EDITOR_MIN_HEIGHT &&
+        deltaY < 0
+      ) {
+        this.setState({editorFlex: [
+          `0 1 ${height0 + DIVIDER_HEIGHT + deltaY}px`,
+          `0 1 ${y + DIVIDER_HEIGHT}px`,
+          '1',
+        ]});
+      } else if (
+        height2 > EDITOR_MIN_HEIGHT
+      ) {
+        const maxDeltaY = height2 - EDITOR_MIN_HEIGHT;
+        const adjustedY = lastY + Math.min(deltaY, maxDeltaY);
+        this.setState({editorFlex: [
+          `0 1 ${height0 + DIVIDER_HEIGHT}px`,
+          `0 1 ${adjustedY + DIVIDER_HEIGHT}px`,
+          '1',
+        ]});
+      } else if (
+        deltaY < 0 &&
+        y <= height1
+      ) {
+        this.setState({editorFlex: [
+          `0 1 ${height0 + DIVIDER_HEIGHT}px`,
+          `0 1 ${y + DIVIDER_HEIGHT}px`,
+          '1',
+        ]});
+      }
     }
   }
 
