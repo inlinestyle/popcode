@@ -213,7 +213,7 @@ class Workspace extends React.Component {
   }
 
   _renderInstructionsBar() {
-    if (!get(this.props, ['currentProject', 'instructions'])) {
+    if (!get(this.props, ['currentProject', 'instructions', 'markdown'])) {
       return null;
     }
 

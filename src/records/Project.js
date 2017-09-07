@@ -1,3 +1,4 @@
+import isString from 'lodash/isString';
 import {Record, Set} from 'immutable';
 
 import HTML_TEMPLATE from '../../templates/new.html';
@@ -8,13 +9,18 @@ const Sources = Record({
   javascript: '',
 });
 
+const Instructions = Record({
+  isKnownToBreakSyntaxHighlighting: false,
+  markdown: '',
+});
+
 export default class Project extends Record({
   projectKey: null,
   sources: new Sources(),
   enabledLibraries: new Set(),
   hiddenUIComponents: new Set(),
   updatedAt: null,
-  instructions: '',
+  instructions: new Instructions(),
 }) {
   static fromJS({
     projectKey = null,
@@ -22,7 +28,7 @@ export default class Project extends Record({
     enabledLibraries = [],
     hiddenUIComponents = [],
     updatedAt = null,
-    instructions = '',
+    instructions = {},
   }) {
     return new Project({
       projectKey,
@@ -30,7 +36,9 @@ export default class Project extends Record({
       enabledLibraries: new Set(enabledLibraries),
       hiddenUIComponents: new Set(hiddenUIComponents),
       updatedAt,
-      instructions,
+      instructions: new Instructions(isString(instructions) ?
+        {markdown: instructions} :
+        instructions),
     });
   }
 }

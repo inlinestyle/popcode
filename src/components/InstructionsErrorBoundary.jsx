@@ -30,12 +30,12 @@ export default class InstructionsErrorBoundary extends React.Component {
 
   render() {
     return markdownToReact(
-      this.props.instructions,
+      this.props.instructions.markdown,
       this.state.useHighlighting,
     );
   }
 }
 
 InstructionsErrorBoundary.propTypes = {
-  instructions: PropTypes.string.isRequired,
+  instructions: PropTypes.object.isRequired,
 };

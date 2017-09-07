@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import InstructionsErrorBoundary from './InstructionsErrorBoundary';
 
 export default function Instructions({instructions, isOpen}) {
-  if (!instructions || !isOpen) {
+  if (!instructions.markdown || !isOpen) {
     return null;
   }
 
@@ -17,7 +17,7 @@ export default function Instructions({instructions, isOpen}) {
         'u__flex-container_column',
       )}
     >
-      {instructions ?
+      {instructions.markdown ?
         <InstructionsErrorBoundary instructions={instructions} /> :
         null}
     </div>
@@ -25,6 +25,6 @@ export default function Instructions({instructions, isOpen}) {
 }
 
 Instructions.propTypes = {
-  instructions: PropTypes.string.isRequired,
+  instructions: PropTypes.object.isRequired,
   isOpen: PropTypes.bool.isRequired,
 };

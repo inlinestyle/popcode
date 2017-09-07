@@ -108,9 +108,9 @@ function buildGistFromProject(project) {
       language: 'JavaScript',
     };
   }
-  if (trim(project.instructions)) {
+  if (trim(project.instructions.markdown)) {
     files['README.md'] = {
-      content: project.instructions,
+      content: project.instructions.markdown,
       language: 'Markdown',
     };
   }

@@ -53,7 +53,9 @@ function importGist(state, projectKey, gistData) {
       },
       enabledLibraries: popcodeJson.enabledLibraries || [],
       hiddenUIComponents: popcodeJson.hiddenUIComponents || [],
-      instructions: contentForLanguage(files, 'Markdown'),
+      instructions: {
+        markdown: contentForLanguage(files, 'Markdown'),
+      },
     },
   );
 }

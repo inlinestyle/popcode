@@ -5,5 +5,5 @@ import getProjects from './getProjects';
 export default createSelector(
   [getCurrentProjectKey, getProjects],
   (projectKey, projects) =>
-    projectKey ? projects.getIn([projectKey, 'instructions']) : '',
+    projectKey ? projects.getIn([projectKey, 'instructions']) : {},
 );
