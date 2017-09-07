@@ -29,9 +29,8 @@ const remarkWithoutHighlighting = memoize(() =>
   remark().use(remarkReact),
 );
 
-export default {
-  toReact: (markdown, useHighlighting) =>
-    useHighlighting ?
-      remarkWithHighlighting().processSync(markdown).contents :
-      remarkWithoutHighlighting().processSync(markdown).contents,
-};
+export function toReact(markdown, useHighlighting) {
+  return useHighlighting ?
+    remarkWithHighlighting().processSync(markdown).contents :
+    remarkWithoutHighlighting().processSync(markdown).contents;
+}

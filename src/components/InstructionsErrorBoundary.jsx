@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import markdown from '../util/markdown';
+import {toReact as markdownToReact} from '../util/markdown';
 
 export default class InstructionsErrorBoundary extends React.Component {
   constructor(props) {
@@ -29,7 +29,7 @@ export default class InstructionsErrorBoundary extends React.Component {
   }
 
   render() {
-    return markdown.toReact(
+    return markdownToReact(
       this.props.instructions,
       this.state.useHighlighting,
     );
